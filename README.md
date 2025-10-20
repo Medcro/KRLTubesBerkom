@@ -20,11 +20,6 @@ Provide step-by-step instructions on how to get your project running locally. Fo
     ```bash
     cd KRLTubesBerkom
     ```
-3.  Install dependencies:
-    ```bash
-    // Add your dependency installation commands here (e.g., npm install, pip install -r requirements.txt)
-    ```
-
 -----
 
 ## 🛠️ How to Contribute
