@@ -1,4 +1,5 @@
 import component.input_data as input_data
+
 # PROSES LOGIN
 print("Selamat datang di Access KAI")
 decision = input("Apakah Anda sudah memiliki akun? 1. Ya 2. Tidak : ")
@@ -12,17 +13,18 @@ elif decision == "2":
     email = input("Masukkan email Anda: ")
     pass_email = input("Masukkan password Anda: ")
     input_data.register_user(email, pass_email)
+
+    # INPUT DATA DIRI
+    print("Isi data diri Anda")
+    nama = str(input("Nama lengkap: "))
+    nomor = int(input("Nomor handphone: "))
+    nik = int(input("NIK KTP: "))
+    gender = str(input("Gender (L/P): "))
+    input_data.input_user_data(nama, nomor, nik, gender)
 else:
     print("Pilihan tidak valid. Silakan mulai ulang program.")
     exit()
 
-# INPUT DATA DIRI
-print("Isi data diri Anda")
-nama = str(input("Nama lengkap: "))
-nomor = int(input("Nomor handphone: "))
-nik = int(input("NIK KTP: "))
-gender = str(input("Gender (L/P): "))
-input_data.input_user_data(nama, nomor, nik, gender)
 
 decision = input("Apakah Anda ingin pesan tiket? 1. Ya 2. Tidak : ")
 if decision == 1:
