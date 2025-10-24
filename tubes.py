@@ -30,7 +30,7 @@ while True:
         print("Silahkan registrasi terlebih dahulu")
         email = input("Masukkan email Anda: ")
         pass_email = input("Masukkan password Anda: ")
-        if input_data.register_user(email, pass_email): 
+        if input_data.register_user(email, pass_email):
             print("Isi data diri Anda")
             nama = str(input("Nama lengkap: "))
             nomor = int(input("Nomor handphone: "))
@@ -39,7 +39,7 @@ while True:
             input_data.input_user_data(nama, nomor, nik, gender)
         else:
             print("Registrasi gagal. Silakan coba lagi.")
-            continue 
+            continue
 
     else:
         print("Pilihan tidak valid. Silakan coba lagi.")
@@ -85,4 +85,3 @@ while True:
         break
     else:
         print("Pilihan tidak valid. Silakan coba lagi.")
-    

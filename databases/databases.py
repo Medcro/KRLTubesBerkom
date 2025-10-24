@@ -1,4 +1,5 @@
 import sqlite3
+import component.generate_qrcode as qrcode
 
 
 def init_data_diri_db():
@@ -39,7 +40,8 @@ def init_train_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         asal TEXT NOT NULL,
         tujuan TEXT NOT NULL,
-        jam_keberangkatan TEXT NOT NULL
+        jam_keberangkatan TEXT NOT NULL,
+        tiket_id INTEGER NOT NULL
     )
     ''')
 
@@ -89,26 +91,16 @@ def add_user(nama, nomor, NIK, gender):
     conn.close()
 
 
-def get_all_users():
-    conn = sqlite3.connect('data_diri.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users")
-    users = cursor.fetchall()
-    conn.close()
-    return users
-
-
 def book_ticket(asal, tujuan, jam_keberangkatan, user_name):
     conn = sqlite3.connect('data_kereta.db')
     cursor = conn.cursor()
     try:
-        cursor.execute("INSERT INTO kereta_info (asal, tujuan, jam_keberangkatan) VALUES (?, ?, ?)",
-                       (asal, tujuan, jam_keberangkatan,))
-        row = cursor.fetchone()
+        tiket_id = qrcode.create()
+        cursor.execute("INSERT INTO kereta_info (asal, tujuan, jam_keberangkatan, tiket_id) VALUES (?, ?, ?, ?)",
+                       (asal, tujuan, jam_keberangkatan, tiket_id))
         conn.commit()
-        row_id = cursor.lastrowid
         print(
-            f'Tiket berhasil dipesan untuk {user_name}. Asal: {asal}, Tujuan: {tujuan}, Jam Keberangkatan: {jam_keberangkatan}')
+            f'Tiket berhasil dipesan untuk {user_name}. Asal: {asal}, Tujuan: {tujuan}, Jam Keberangkatan: {jam_keberangkatan}, ID Tiket: {tiket_id}')
         return True
     except Exception as e:
         print(f"Error during booking: {e}")
