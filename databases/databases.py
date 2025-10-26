@@ -1,9 +1,14 @@
 import sqlite3
-import component.generate_qrcode as qrcode
+import modules.generate_barcode as barcode
+import os
+
+db_dir = "databases"
+
+# Membuat tabel data untuk data diri
 
 
 def init_data_diri_db():
-    conn = sqlite3.connect('data_diri.db')
+    conn = sqlite3.connect(os.path.join(db_dir, 'data_diri.db'))
     cursor = conn.cursor()
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS users (
@@ -17,9 +22,11 @@ def init_data_diri_db():
     conn.commit()
     conn.close()
 
+# Membuat tabel data untuk info login
+
 
 def init_login_db():
-    conn = sqlite3.connect('data_diri.db')
+    conn = sqlite3.connect(os.path.join(db_dir, 'data_diri.db'))
     cursor = conn.cursor()
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS loginInfo (
@@ -31,9 +38,11 @@ def init_login_db():
     conn.commit()
     conn.close()
 
+# Membuat tabel data untuk informasi kereta
+
 
 def init_train_db():
-    conn = sqlite3.connect('data_kereta.db')
+    conn = sqlite3.connect(os.path.join(db_dir, 'data_kereta.db'))
     cursor = conn.cursor()
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS kereta_info (
@@ -45,35 +54,36 @@ def init_train_db():
     )
     ''')
 
+# Fungsi untuk register
+
 
 def register_user(email, password):
-    conn = sqlite3.connect('data_diri.db')
+    conn = sqlite3.connect(os.path.join(db_dir, 'data_diri.db'))
     cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT id FROM loginInfo WHERE email = ?", (email,))
-        if cursor.fetchone():
-            print("Email sudah terdaftar. Silakan gunakan email lain.")
-            return False
-
-        cursor.execute(
-            "INSERT INTO loginInfo (email, password) VALUES (?, ?)", (email, password))
-        conn.commit()
-        print("Registrasi berhasil!")
-        return True
-    except Exception as e:
-        print(f"Error during registration: {e}")
-        return False
-    finally:
+    # Mencari apakah ada email inputan dari user yang sama dengan email yang sudah ada di database
+    cursor.execute("SELECT id FROM loginInfo WHERE email = ?", (email,))
+    if cursor.fetchone():
+        print("Email sudah terdaftar. Silakan gunakan email lain.")
         conn.close()
+        return False
+    cursor.execute(
+        "INSERT INTO loginInfo (email, password) VALUES (?, ?)", (email, password))
+    conn.commit()
+    conn.close()
+    print("Registrasi berhasil!")
+    return True
+
+# Fungsi untuk login
 
 
 def login_user(email, password):
-    conn = sqlite3.connect('data_diri.db')
+    conn = sqlite3.connect(os.path.join(db_dir, 'data_diri.db'))
     cursor = conn.cursor()
     cursor.execute(
         "SELECT * FROM loginInfo WHERE email = ? AND password = ?", (email, password))
     user = cursor.fetchone()
     conn.close()
+    # Jika ada email dan password yang sama dengan yang ada di database, proses login akan berhasil
     if user:
         print("Login berhasil!")
         return True
@@ -81,48 +91,41 @@ def login_user(email, password):
         print("Email atau password salah.")
         return False
 
+# Fungsi untuk input data diri
+
 
 def add_user(nama, nomor, NIK, gender):
-    conn = sqlite3.connect('data_diri.db')
+    conn = sqlite3.connect(os.path.join(db_dir, 'data_diri.db'))
     cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO users (nama, nomor, NIK, gender) VALUES (?, ?, ?, ?)", (nama, nomor, NIK, gender))
     conn.commit()
     conn.close()
 
+# Fungsi untuk pemesanan tiket
 
-def book_ticket(asal, tujuan, jam_keberangkatan, user_name):
-    conn = sqlite3.connect('data_kereta.db')
+
+def book_ticket(asal, tujuan, jam_keberangkatan, nama):
+    conn = sqlite3.connect(os.path.join(db_dir, 'data_kereta.db'))
     cursor = conn.cursor()
-    try:
-        tiket_id = qrcode.create()
-        cursor.execute("INSERT INTO kereta_info (asal, tujuan, jam_keberangkatan, tiket_id) VALUES (?, ?, ?, ?)",
-                       (asal, tujuan, jam_keberangkatan, tiket_id))
-        conn.commit()
-        print(
-            f'Tiket berhasil dipesan untuk {user_name}. Asal: {asal}, Tujuan: {tujuan}, Jam Keberangkatan: {jam_keberangkatan}, ID Tiket: {tiket_id}')
-        return True
-    except Exception as e:
-        print(f"Error during booking: {e}")
-        return False
-    finally:
-        conn.close()
+    # Membuat barcode
+    tiket_id = barcode.create(nama)
+    cursor.execute("INSERT INTO kereta_info (asal, tujuan, jam_keberangkatan, tiket_id) VALUES (?, ?, ?, ?)",
+                   (asal, tujuan, jam_keberangkatan, tiket_id))
+    conn.commit()
+    conn.close()
+    print(
+        f'\nTiket berhasil dipesan untuk {nama}. Asal: {asal}, Tujuan: {tujuan}, Jam Keberangkatan: {jam_keberangkatan}, ID Tiket: {tiket_id}')
+    return True
+
+# Mencari nama user dari email
 
 
 def get_user_by_email(email):
-    conn = sqlite3.connect('data_diri.db')
+    conn = sqlite3.connect(os.path.join(db_dir, 'data_diri.db'))
     cursor = conn.cursor()
     cursor.execute(
-        "SELECT nama, nomor, NIK, gender FROM users WHERE id = (SELECT id FROM loginInfo WHERE email = ?)", (email,))
+        "SELECT nama FROM users WHERE id = (SELECT id FROM loginInfo WHERE email = ?)", (email,))
     user = cursor.fetchone()
     conn.close()
     return user
-
-
-def add_tiket(asal, tujuan, tanggal):
-    conn = sqlite3.connect('data_diri.db')
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO tiket (asal, tujuan, tanggal, nama_kereta) VALUES (?, ?, ?, ?)",
-                   (asal, tujuan, tanggal))
-    conn.commit()
-    conn.close()
