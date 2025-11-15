@@ -1,9 +1,9 @@
-import databases.databases as databases
-
+import databases.databases as databases #library
+import random as rnd
 # Membuat tabel data di databases
 databases.init_login_db()
 databases.init_data_diri_db()
-databases.init_train_db()
+databases.init_kereta_db()
 
 # PROSES LOGIN
 while True:
@@ -49,22 +49,22 @@ while True:
 
 # PESAN TIKET
 while True:
-    station_map = {'1': "Padalarang", '2': "Cimahi",
-                   '3': "Stasiun Bandung", '4': "Kiaracondong", '5': "Rancaekek"}
+    stasiun = {'1': "Padalarang", '2': "Cimahi",
+               '3': "Stasiun Bandung", '4': "Kiaracondong", '5': "Rancaekek"}
 
     decision = input(
         "\nApakah Anda ingin pesan tiket? \n1. Ya \n2. Tidak\nMasukkan pilihan Anda: ")
     if decision == '1':
         asal = input(
             "\nStasiun asal: \n1. Padalarang  \n2. Cimahi \n3. Stasiun Bandung \n4. Kiaracondong \n5. Rancaekek \nPilih stasiun asal Anda: ")
-        asal = station_map.get(asal)
+        asal = stasiun.get(asal)
         if not asal:
             print("\nPilihan tidak valid. Silakan coba lagi.")
             continue
 
         tujuan = input(
             "\nStasiun tujuan: \n1. Padalarang  \n2. Cimahi \n3. Stasiun Bandung \n4. Kiaracondong \n5. Rancaekek \nPilih stasiun tujuan Anda: ")
-        tujuan = station_map.get(tujuan)
+        tujuan = stasiun.get(tujuan)
         if not tujuan:
             print("\nPilihan tidak valid. Silakan coba lagi.")
             continue
@@ -76,13 +76,21 @@ while True:
         jam = input(
             "\nJam keberangkatan: \n1. 05.00 - 07.30 \n2. 07.30-10.00 \n3. 10.00 - 12.30 \n4. 12.30 - 15.00 \n5. 15.00 - 17.30 \nPilih jam keberangkatan Anda: ")
 
-        time_map = {'1': "05.00 - 07.30", '2': "07.30 - 10.00",
-                    '3': "10.00 - 12.30", '4': "12.30 - 15.00", '5': "15.00 - 17.30"}
+        waktu = {'1': "05.00 - 07.30", '2': "07.30 - 10.00",
+                 '3': "10.00 - 12.30", '4': "12.30 - 15.00", '5': "15.00 - 17.30"}
 
-        jam = time_map.get(jam)
+        jam = waktu.get(jam)
         if not jam:
             print("\nPilihan tidak valid. Silakan coba lagi.")
             continue
+
+        va = ""
+        for i in range(10):
+            random_number = rnd.randint(0, 9)
+            random_numbers_str = str(random_number)
+            va = va + random_numbers_str
+
+        print("Lakukan pembayaran melalui VA: ", va)
 
         databases.book_ticket(asal, tujuan, jam, nama)
         print("\n\n====================================================")

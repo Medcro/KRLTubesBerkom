@@ -3,7 +3,8 @@ import modules.generate_barcode as barcode
 import os
 
 db_dir = "databases"
-
+if not os.path.exists(db_dir):
+    os.makedirs(db_dir)
 # Membuat tabel data untuk data diri
 
 
@@ -41,7 +42,7 @@ def init_login_db():
 # Membuat tabel data untuk informasi kereta
 
 
-def init_train_db():
+def init_kereta_db():
     conn = sqlite3.connect(os.path.join(db_dir, 'data_kereta.db'))
     cursor = conn.cursor()
     cursor.execute('''
